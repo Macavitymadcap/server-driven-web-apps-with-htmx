@@ -1,0 +1,25 @@
+import { BeatleService } from './beatles/beatle-service';
+import { DiceService } from './dice/dice-service';
+import { DogService } from './dogs/dog-service';
+import { MonsterService } from './monsters/monster-service';
+import { PokemonService } from './pokemon/pokemon-service';
+import { ProgessService } from './progress/progress-service';
+import { SonnetService } from './sonnets/sonnet-service';
+import { SportsballService } from './sportsball/sportsball-service';
+import { UsersService } from './users/user-service';
+import { ValidationService } from './validation/validation-service';
+import { QuoteService } from './quote/quote-service';
+import { HTMLEscaperService } from './html-escaper/html-escaper-service';
+
+export const sonnetService = new SonnetService();
+export const diceService = new DiceService();
+export const usersService = new UsersService();
+export const validationService = new ValidationService();
+export const dogsService = new DogService();
+export const pokemonService = new PokemonService();
+export const beatlesService = new BeatleService();
+export const monstersService = new MonsterService();
+export const sportsballService = new SportsballService('Saints', 'Ravens');
+export const progressService = new ProgessService();
+export const quoteService = new QuoteService();
+export const htmlEscaperService = new HTMLEscaperService();

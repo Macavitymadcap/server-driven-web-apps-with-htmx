@@ -1,0 +1,9 @@
+code {
+  font-family: 'Kode Mono', monospace;
+  background-color: black;
+  color: greenyellow;
+  border: 0.02em solid #ccc;
+  border-radius: var(--border-radius);
+  padding: 0 0.25em;
+  white-space: nowrap;
+}

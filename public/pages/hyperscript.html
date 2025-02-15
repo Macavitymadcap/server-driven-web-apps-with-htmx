@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>htmx _hyperscript</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.13"></script>
+    <script src="../scripts/reload-client.js" type="module"></script>
+    <script src="../scripts/hyperscript-functions.js" defer></script>
+    <script type="text/hyperscript">
+      def colour(team)
+        if team.like return 'red' end
+        return 'white'
+      end
+
+      def heart(team)
+        if team.like return '❤️' end
+        return '🤍'
+      end
+
+      def report()
+        if the score of $team1 is greater than the score of $team2
+          set text to `${$team1.name} are winning.`
+        else if the score of $team2 is greater than the score of $team1
+          set text to `${$team2.name} are winning.`
+        else
+          set text to 'The score is tied.'
+        end
+        set the textContent of #report to text
+      end
+    </script>
+  </head>
+
+  <body>
+    <header
+      hx-get="/header"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-vals='{"title": "Chapter 5b: _hyperscript"}'
+    >
+      <span id="loading-header">Loading...</span>
+    </header>
+
+    <main>
+      <article class="card flex-column">
+        <h2>Features</h2>
+        <p>
+          The paragraph below demonstrates the useage of two features from the
+          hyperscript library:
+        </p>
+        <ul>
+          <li>
+            <code>init</code>: specifies commands executed when the element is
+            initialised (loaded into the DOM).
+          </li>
+          <li>
+            <code>on</code>: preceded by an event or list of events that will
+            cause specified commads to be executed.
+          </li>
+        </ul>
+        <p
+          _="
+              init log 'initialised'
+              on click log 'got click'
+              on mouseover log 'got mouseover'
+            "
+        >
+          Move the mouse over me and click me to execute the features visible in
+          the console.
+        </p>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Variables</h2>
+        <p>
+          Hyperscript can only access javascript variables declared with
+          <code>var</code>, not <code>let</code> or <code>const</code>. Within
+          hyperscript there are thre scopes for variables:
+        </p>
+        <ul>
+          <li>
+            <b><i>Global</i></b
+            >: accessible through any hyperscript command, signified with a '$'
+            prefix.
+          </li>
+          <li>
+            <b><i>Element</i></b
+            >: scoped to a given element but accessible by any of it's features.
+            Prefixed with a ':'.
+          </li>
+          <li>
+            <b><i>Local</i></b
+            >: scoped to only the given feature, no prefix.
+          </li>
+        </ul>
+        <p _="init log 'javascriptVar = ', javascriptVar">
+          This paragraph logs the <code>javascriptVar</code> loaded from a
+          script when it is initialised
+        </p>
+        <div _="init set global aGlobal to 3">
+          This div sets the global variable <code>aGlobal</code>.
+        </div>
+        <div _="init log 'aGlobal = ', aGlobal">
+          This div logs <code>aGlobal</code>, and the next one uses hyperscript
+          to set it's <code>textContent</code> to it's value.
+        </div>
+        <div _="init set my.textContent to aGlobal"></div>
+        <div
+          _="
+            init set :elementVar to 4 then log 'init :elementVar = ', :elementVar
+            on click log 'click :elementVar =', :elementVar
+            on mouseover log 'mouseover :elementVar =', :elementVar
+          "
+        >
+          Mouseover and click for an element-scoped variable.
+        </div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Conditional Visibility</h2>
+        <p>
+          The button below changes the visibility of the paragraph below it by
+          toggling the target element's opacity.
+        </p>
+        <button
+          class="text"
+          _="on click toggle the *opacity of the next <div/>"
+        >
+          Toggle
+        </button>
+        <div class="message">Hello, world!</div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Counter</h2>
+        <p>
+          The counter below is controlled entirely through hyperscript. The
+          decrementer button is initially disabled, but element access of
+          properties using '@', that can be easily changed when the counter is
+          greater than 0. With hyperscript's css selection capabilities, we can
+          avoid adding ids to every element.
+        </p>
+        <div class="flex-row">
+          <button
+            disabled
+            _="on click
+            remove @disabled from the next <button/>
+            decrement the textContent of the next <output/>
+            if it is 0 then add @disabled to me
+          "
+          >
+            -
+          </button>
+          <output>0</output>
+          <button
+            _="on click
+            remove @disabled from the previous <button/>
+            increment the textContent of the previous <output/>
+            if it is 10 then add @disabled to me
+          "
+          >
+            +
+          </button>
+        </div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>For and If Commands</h2>
+        <p>
+          As well as demonstrating how <code>for</code> and <code>if</code> are
+          used in _hyperscript, this section also utilises the
+          <code>make</code>, <code>set</code> and <code>put</code> commands to
+          manipulate the DOM.
+        </p>
+        <div
+          _="init
+          for colour in colours
+            if colour.primary
+              make a <div/>
+              set its *color to colour.name
+              set its *fontSize to 2rem
+              set its textContent to colour.name
+              put it at the end of me
+            end
+          end 
+        "
+        ></div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Keeping Score</h2>
+        <p>
+          This examples shows one of the advantages of using hyperscript over
+          alpine: hyperscript can be defined in it's own script tag of
+          <code>type="text/hyperscript"</code>, or even in a separate file with
+          the <code>._hs</code> file extension (this doesn't work for the
+          <code>heart()</code> and <code>colour()</code> functions in this
+          example).
+        </p>
+
+        <article
+          class="scores"
+          _="init
+          set $team1 to {name: 'Chiefs', like: false, score: 25}
+          set $team2 to {name: '49ers', like: false, score: 22}
+        "
+        >
+          <h3 id="report" _="init report()"></h3>
+          <div class="flex-row centred">
+            <div class="column team">
+              <label>
+                Team
+                <input
+                  type="text"
+                  _="
+                  init set my value to $team1.name
+                  on change set $team1.name to my value then report()
+                "
+                />
+              </label>
+              <label>
+                Score
+                <input
+                  type="number"
+                  _="
+                  init set my value to $team1.score
+                  on change set $team1.score to my value then report()
+                "
+                />
+              </label>
+              <button
+                _="
+                init set my textContent to heart($team1)
+                on click
+                  set $team1.like to not $team1.like
+                  set *border-color of closest <div/> to colour($team1)
+                  set my textContent to heart($team1)
+              "
+              ></button>
+            </div>
+
+            <div class="column team">
+              <label>
+                Team
+                <input
+                  type="text"
+                  _="
+                  init set my value to $team2.name
+                  on change set $team2.name to my value then report()
+                "
+                />
+              </label>
+              <label>
+                Score
+                <input
+                  type="number"
+                  _="
+                  init set my value to $team2.score
+                  on change set $team2.score to my value then report()
+                "
+                />
+              </label>
+              <button
+                _="
+                init set my textContent to heart($team2)
+                on click
+                  set $team2.like to not $team2.like
+                  set *border-color of closest <div/> to colour($team2)
+                  set my textContent to heart($team2)
+              "
+              ></button>
+            </div>
+          </div>
+        </article>
+      </article>
+    </main>
+
+    <footer
+      hx-get="/footer"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-indicator="#loading-footer"
+    >
+      <img
+        src="/assets/spinner.gif"
+        alt="loading"
+        id="loading-footer"
+        class="htmx-indicator centred"
+      />
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+img.bun-logo {
+  display: inline-block;
+  height: 3rem;
+  width: 3.2rem;
+}
+
+img.htmx-indicator {
+  display: inline-block;
+  height: var(--button-minimum-hw);
+  width: var(--button-minimum-hw);
+}

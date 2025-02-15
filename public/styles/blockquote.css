@@ -1,0 +1,22 @@
+blockquote {
+  margin: 0.5rem 0 0 0;
+  padding: 0.5rem;
+}
+
+blockquote::before {
+  content: open-quote;
+  font-size: 4em;
+  color: #ccc;
+  line-height: 0.1em;
+  margin-right: 0.05em;
+  vertical-align: -0.4em;
+}
+
+blockquote::after {
+  content: close-quote;
+  font-size: 4em;
+  color: #ccc;
+  line-height: 0.05em;
+  margin-left: 0.1em;
+  vertical-align: -0.4em;
+}

@@ -1,0 +1,29 @@
+body {
+  background-color: red;
+}
+
+article.card {
+  background-color: yellow;
+  border: 5px solid purple;
+  padding: 20px;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+header,
+footer {
+  background-color: lime;
+  padding: 10px;
+  text-align: center;
+}
+
+h1 {
+  color: blue;
+  font-size: 50px;
+  text-shadow: 2px 2px 5px black;
+}
+
+a {
+  color: orange;
+  font-size: 20px;
+  text-decoration: underline;
+}

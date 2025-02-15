@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Balloon Game</title>
+    <link rel="stylesheet" href="../styles/balloon-game.css" />
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script>
+      const gameDuration = 5;
+
+      let balloon = 0; // will get from CSS variable
+
+      // But CSS variables can only be accessed from elements when they are in the DOM
+      window.onload = () => {
+        const style = getComputedStyle(document.body);
+        balloonSize = parseInt(style.getPropertyValue('--balloon-size'));
+      };
+
+      const cheat = () => {
+        const balloons = htmx.findAll('.balloon');
+        for (const balloon of balloons) {
+          htmx.trigger(balloon, 'click');
+        }
+      };
+
+      const createBalloon = (data, number) => {
+        const balloon = document.createElement('div');
+        balloon.textContent = number;
+        htmx.addClass(balloon, 'balloon');
+        const bgColor = getBalloonColour();
+        balloon.style.backgroundColor = bgColor;
+        balloon.style.color = getTextColour(bgColor);
+        // Compute a random horizontal position.
+        const maxLeft = window.innerWidth - balloonSize;
+        const left = Math.floor(Math.random() * maxLeft);
+        balloon.style.left = `${left}px`;
+        // Place the balloon just off the top of the window.
+        balloon.style.top = `-${balloonSize}px`;
+        // Remove the balloon when it hits the ground.
+        htmx.on(balloon, 'transitionend', () => {
+          // new Audio('pop.mp3').play();
+          htmx.remove(balloon);
+        });
+        // Remove the balloon when the user clicks it.
+        const clickHandler = () => {
+          // new Audio('pop.mp3').play();
+          data.score++;
+          htmx.remove(balloon);
+        };
+        htmx.on(balloon, 'click', clickHandler);
+        // Save listener so it's easy to remove it later.
+        balloon.clickHandler = clickHandler;
+        // Wait until the next animiation frame to add a new ballon.
+        requestAnimationFrame(() => {
+          document.body.appendChild(balloon);
+          // Wait until the next animiation frame
+          // so we know the balloon has been rendered.
+          requestAnimationFrame(() => {
+            balloon.style.top = window.innerHeight - balloonSize + 'px';
+          });
+        });
+      };
+
+      const endGame = data => {
+        data.playing = false;
+
+        const balloons = htmx.findAll('.balloon');
+        for (const balloon of balloons) {
+          htmx.off(balloon, 'click', balloon.clickHandler);
+        }
+      };
+
+      const getBalloonColour = () => {
+        const letters = '0123456789ABCDEF';
+        let colour = '#';
+        for (let i = 0; i < 6; i++) {
+          colour += letters[Math.floor(Math.random() * 16)];
+        }
+        return colour;
+      };
+
+      const getTextColour = hexColour => {
+        const r = parseInt(hexColour.substr(1, 2), 16);
+        const g = parseInt(hexColour.substr(3, 2), 16);
+        const b = parseInt(hexColour.substr(5, 2), 16);
+        const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        return luminance > 0.5 ? '#000000' : '#FFFFFF';
+      };
+
+      const startGame = data => {
+        data.playing = true;
+        data.score = 0;
+        data.seconds = gameDuration;
+        let number = 0;
+        createBalloon(data, ++number);
+        const timer = setInterval(() => {
+          data.seconds--;
+          if (data.seconds === 0) {
+            clearInterval(timer);
+            endGame(data);
+          } else {
+            createBalloon(data, ++number);
+          }
+        }, 1000);
+      };
+    </script>
+  </head>
+  <body>
+    <main x-data="{playing: false, seconds: 0, score: 0}">
+      <div class="controls">
+        <template x-if="!playing">
+          <button class="text" @click="startGame($data)">Play</button>
+        </template>
+        <span>Score: <span x-text="score"></span></span>
+        <template x-if="playing">
+          <span>
+            , Seconds Remaining:
+            <span x-text="seconds"></span>
+            <button class="text" @click="cheat">Cheat</button>
+          </span>
+        </template>
+      </div>
+    </main>
+  </body>
+</html>

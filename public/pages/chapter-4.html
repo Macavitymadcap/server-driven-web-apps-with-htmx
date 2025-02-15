@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>htmx Common Scenarios</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2"></script>
+    <script src="../scripts/chapter-4.js" defer></script>
+    <script src="../scripts/reload-client.js" type="module"></script>
+  </head>
+
+  <body>
+    <header
+      hx-get="/header"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-vals='{"title": "Chapter 4: Recipes for Common Scenarios"}'
+    >
+      <span id="loading-header">Loading...</span>
+    </header>
+
+    <main>
+      <article class="card flex-column">
+        <h2>Boosting</h2>
+        <p>
+          The links below demonstrate teh diffrerence between a normal link and
+          a one with the <code>hx-boost</code> attribute set to true. When you
+          click on the un-boosted link, the entire page is reloaded, and the
+          scripts and styles for that page are loaded. Clicking the boosted link
+          ignores the scripts and styles that are connected to that page and use
+          those that were loaded as part of this one.
+        </p>
+        <a href="/pages/boosting.html">No Boosting</a>
+        <a href="/pages/boosting.html" hx-boost="true">Boosted</a>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Active Search</h2>
+        <p>
+          An active search is relatively simple to implement with htmx by using
+          <code>hx-trigger="keyup changed delay:200ms"</code> to send the search
+          term once the user has stopped typing for 200ms.
+        </p>
+        <fieldset class="flex-row">
+          <label for="search">Search Monsters:</label>
+          <input
+            type="search"
+            id="search"
+            name="search"
+            hx-trigger="keyup changed delay:200ms"
+            hx-post="/chapter-4/search-monsters"
+            hx-target="#matches"
+          />
+        </fieldset>
+        <button class="text destructive" _="on click remove <li/> from matches">
+          Clear Results
+        </button>
+        <ul id="matches"></ul>
+      </article>
+
+      <article class="card flex-column">
+        <h2>API Input Validation</h2>
+        <p>
+          The input fields below will validate as you type. If either are valid,
+          a &#9989; will be returned by the server, otherwise a &#10060; will be
+          returned.
+        </p>
+        <form
+          id="api-validation"
+          hx-post="/chapter-4/api-validation"
+          hx-target="#submit-result"
+          hx-disabled-elt="#submit-button"
+          hx-indicator="#submit-indicator"
+        >
+          <fieldset id="validate-inputs" class="flex-column">
+            <legend>Login</legend>
+            <div class="flex-row">
+              <label for="email">Email:</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                hx-get="/chapter-4/email-validate"
+                hx-target="#email-error"
+                hx-trigger="keyup changed delay:200ms"
+              />
+              <span id="email-error"></span>
+            </div>
+            <div class="flex-row">
+              <label for="password">Password:</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                hx-get="/chapter4-/password-validate"
+                hx-target="#password-error"
+                hx-trigger="keyup changed delay:200ms"
+              />
+              <span id="password-error"></span>
+            </div>
+          </fieldset>
+          <div class="flex-row centred">
+            <button class="text" id="submit-button">Submit</button>
+            <img
+              alt="loading"
+              id="submit-indicator"
+              class="htmx-indicator"
+              src="/assets/spinner.gif"
+            />
+          </div>
+        </form>
+        <div id="submit-result"></div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Users (Lazy Loading)</h2>
+        <p>
+          The table below will only load when the user scrolls to it. To
+          simulate a long call a delay of 1 second has been added to the server
+          response, which allows the spinner gif below to be activated with the
+          css class <code>htmx-indicator</code>.
+        </p>
+        <div
+          hx-get="/chapter-4/users"
+          hx-indicator="#lazy-indicator"
+          hx-trigger="revealed"
+          class="flex-column"
+        >
+          <img
+            alt="loading"
+            id="lazy-indicator"
+            class="htmx-indicator"
+            src="/assets/spinner.gif"
+          />
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Deleting Elements & Resetting a Form</h2>
+        <p>
+          With <code>hx-swap="delete"</code> and the <code>hx-target</code>
+          set to the containing element the server does not need to return any
+          html and the element is removed from both the front and back ends.
+        </p>
+        <p>
+          With a combination of
+          <a href="https://alpinejs.dev/">Alpine.js</a> and
+          <code>hx-on::after-request</code> a form can be resent once ot has
+          been submitted.
+        </p>
+        <div class="flex-column">
+          <h3>Conditions</h3>
+          <form
+            id="reset-form"
+            hx-post="/chapter-4/reset-conditions-form"
+            hx-target="#conditions-row"
+            hx-swap="afterbegin"
+            hx-indicator="#conditions-indicator"
+            hx-disabled-elt="#reset-button"
+            x-data="{ condition: '' }"
+            hx-on::after-request="this.reset()"
+          >
+            <fieldset class="flex-row">
+              <legend>Add Condition</legend>
+              <label for="reset-text">Condition:</label>
+              <input
+                type="text"
+                id="reset-text"
+                name="condition"
+                x-model="condition"
+              />
+            </fieldset>
+            <div class="flex-row centred">
+              <button
+                class="text"
+                id="reset-button"
+                :disabled="condition.trim().length === 0"
+              >
+                Submit
+              </button>
+              <img
+                alt="loading"
+                id="conditions-indicator"
+                class="htmx-indicator"
+                src="/assets/spinner.gif"
+              />
+            </div>
+          </form>
+          <div
+            id="conditions-row"
+            class="centred flex-row wrapped"
+            hx-get="/chapter-4/conditions"
+            hx-trigger="load"
+            hx-indicator="#conditions-indicator"
+          ></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Optimistic Updates</h2>
+        <p>
+          For slow endpoints, the front end can assume success and update itself
+          before the server responds. If the server responds with an error, the
+          front end can be updated to reflect this. In the example below, the
+          heart will turn pink while the request is in flight before settling on
+          red when the server responds.
+        </p>
+        <h3>Dogs</h3>
+        <div class="centred">
+          <img
+            alt="loading"
+            id="dogs-indicator"
+            class="htmx-indicator"
+            src="/assets/spinner.gif"
+          />
+        </div>
+        <div class="flex-column">
+          <table
+            hx-get="/chapter-4/dog-rows"
+            hx-target="find tbody"
+            hx-trigger="revealed"
+          >
+            <thead>
+              <tr>
+                <th>Breed</th>
+                <th>Like?</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Pagination</h2>
+        <p>
+          This demonstration of pagination makes use of the
+          <a href="https://pokeapi.co/">PokeApi</a> to render a table of five
+          pokemon at a time.
+        </p>
+        <h3>Pokemon</h3>
+        <div class="flex-column">
+          <table
+            hx-trigger="load"
+            hx-get="/chapter-4/paginated-poke-rows?page=1"
+            hx-indicator="#poke-indicator"
+          ></table>
+          <div id="pagination-row">
+            <span id="pagination-buttons">
+              <img
+                src="/assets/spinner.gif"
+                alt="loading"
+                id="poke-indicator"
+                class="htmx-indicator"
+              />
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Infinite Scroll</h2>
+        <p>
+          This demonstration of
+          <a href="infinite-scroll.html" hx-boost="true">infinite scroll</a>
+          makes use of the <a href="https://pokeapi.co/">PokeApi</a> to render a
+          table of pokemon that will load more as you scroll down the page.
+        </p>
+      </article>
+
+      <article class="card">
+        <h2>Toggling Selection</h2>
+        <p>
+          While the <code>&lt;select&gt;</code> provides a way to allows users
+          to select elements, the possible options are hidden until the user
+          clicks on the element. If a small number of options is to be selected,
+          and we want the options to remain visible, we can achieve this with a
+          row of <code>&lt;button&gt;</code> elements and some htmx fuckery.
+        </p>
+        <div
+          hx-get="/chapter-4/beatles"
+          hx-trigger="load"
+          class="centred flex-row"
+        ></div>
+      </article>
+
+      <article class="card">
+        <h2>Fixed Rate Polling</h2>
+        <p>
+          The score for the sportsball game will update every 5 seconds wih only
+          one attribute, <code>hx-trigger="load, every 5s"</code>. The polling
+          will stop when either team reaches 30 or more points. This is achieved
+          by the server responding with a <code>286</code>, a unique status code
+          to htmx that instructs an element to cease polling.
+        </p>
+        <div
+          class="flex-row centred"
+          hx-get="/chapter-4/score"
+          hx-trigger="load, every 5s"
+        ></div>
+      </article>
+
+      <article class="card">
+        <h2>Load Polling</h2>
+        <p>
+          Load polling differs from fixed-rate polling in that the server
+          instructs the client when to poll again and replaces the polled
+          element. This continues until the server responds with an element that
+          doesn't poll. In the example below, this is used to create a custom
+          progress bar.
+        </p>
+        <div
+          class="centred"
+          hx-get="/chapter-4/custom-progress-bar"
+          hx-trigger="load"
+        ></div>
+        <div class="centred">
+          <button
+            id="custom-reset-button"
+            class="text"
+            hx-get="/chapter-4/custom-progress"
+            hx-target="#progress-container"
+            hx-swap="outerHTML"
+          >
+            Reset Custom
+          </button>
+        </div>
+        <p>
+          Of course, there is already a progress bar in HTML, and the same
+          principle can be applied to it as well.
+        </p>
+        <div
+          id="native-progress-container"
+          class="centred"
+          hx-get="/chapter-4/native-progress"
+          hx-trigger="load"
+        ></div>
+        <div class="centred">
+          <button
+            id="native-reset-button"
+            class="text"
+            hx-get="/chapter-4/native-progress"
+            hx-target="#native-progress-container"
+          >
+            Reset Native
+          </button>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Custom Dialogs: Sweet Alert</h2>
+        <p>
+          The <code>hx-confirm</code> attribute makes use of the
+          <code>confirm</code> method of the browser's <code>window</code>
+          object, which doesn't allow for much customisation. The library
+          <a href="https://sweetalert2.github.io/">sweetalert2</a> provides a
+          more customisable alternative.
+        </p>
+        <div class="flex-column">
+          <button
+            id="thing-button"
+            class="text"
+            hx-confirm="Are you sure you want to do this?"
+            hx-get="/chapter-4/do-thing"
+            hx-indicator="#sweet-indicator"
+            hx-target="#the-thing"
+          >
+            Do the Thing
+          </button>
+          <div id="the-thing"></div>
+          <img
+            alt="loading"
+            id="sweet-indicator"
+            class="htmx-indicator"
+            src="/assets/spinner.gif"
+          />
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Adding Headers to Requests</h2>
+        <p>
+          Sometimes it is desirable to add headers to requests from the
+          frontend, like for authentication. You can listen for the
+          <code>htmx:configRequest</code> event which is dispatched before the
+          request is sent and add whatever headers you need.
+        </p>
+        <div class="flex-column">
+          <button
+            class="text"
+            hx-get="/chapter-4/request1"
+            hx-target="#request1"
+          >
+            Request 1
+          </button>
+          <output id="request1"></output>
+        </div>
+        <div class="flex-column">
+          <button
+            class="text"
+            hx-get="/chapter-4/request2"
+            hx-target="#request2"
+          >
+            Request 2
+          </button>
+          <output id="request2"></output>
+        </div>
+      </article>
+    </main>
+
+    <footer
+      hx-get="/footer"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-indicator="#loading-footer"
+    >
+      <span id="loading-footer">Loading...</span>
+    </footer>
+  </body>
+</html>

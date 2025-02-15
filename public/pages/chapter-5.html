@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>htmx Interactivity</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.13"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="../scripts/reload-client.js" type="module"></script>
+  </head>
+
+  <body>
+    <header
+      hx-get="/header"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-vals='{"title": "Chapter 5: Implementing Interactivity"}'
+    >
+      <span id="loading-header">Loading...</span>
+    </header>
+
+    <main>
+      <article class="card flex-column">
+        <h2>Alpine and hyperscript</h2>
+        <p>
+          htmx deals (mostly) with server-side interaction, but you may some on
+          the client side too. There's javascript, of course, but in this modern
+          age that's not your only option.
+        </p>
+
+        <p>
+          There are two libraries that share much of the philosophy of htmx;
+          <a href="https://alpinejs.dev/" target="_blank">Alpine.js</a>, a
+          lightweight frontend framework that allows you to add interactivey to
+          the front end through hhtml attributes, and
+          <a href="https://hyperscript.org/" target="_blank">_hyperscript</a>, a
+          interpreted javascript llanguage that is add to an attribute with only
+          one tag, or even in separate scripts.
+        </p>
+
+        <p>
+          This chapter deals with both through extensive examples, so I have put
+          them into their own pages which you can access here:
+        </p>
+        <ul>
+          <li><a href="../pages/alpine.html">Alipne</a></li>
+          <li><a href="../pages/hyperscript.html">_hyperscript</a></li>
+        </ul>
+        <p>
+          As a a taster, below you can find a temperature guage made with both.
+          The change of colour and text updating is handled by each library.
+        </p>
+
+        <div class="card grid-2-columns">
+          <div
+            class="flex-column"
+            x-data="{temperature: 10, temperatureColor: 'green'}"
+            x-effect="temperatureColor = temperature < 0 ? 'blue' : (temperature > 23 ? 'red' : 'green')"
+          >
+            <h3>Alpine.js</h3>
+            <label for="alpine-temperature">℃</label>
+            <input
+              type="range"
+              name="alpine-temperature"
+              min="-20"
+              max="40"
+              x-model="temperature"
+            />
+            <output x-text="temperature" :class="temperatureColor"></output>
+          </div>
+
+          <div class="flex-column">
+            <h3>_hyperscript</h3>
+            <label for="hyperscript-temperature">℃</label>
+            <input
+              type="range"
+              name="hyperscript-temperature"
+              min="-20"
+              max="40"
+              _="on load or input
+                      set $temperature to my value
+                      set the textContent of the next <output/> to $temperature
+                      send temperatureChange to the next <output/>
+                    "
+            />
+            <output
+              _="on temperatureChange
+                      if $temperature is less than 0 set my @class to 'blue'
+                      else if $temperature is greater than 23 set my @class to 'red'
+                      else set my @class to 'green'
+                    "
+            ></output>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <footer
+      hx-get="/footer"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-indicator="#loading-footer"
+    >
+      <img
+        src="/assets/spinner.gif"
+        alt="loading"
+        id="loading-footer"
+        class="htmx-indicator centred"
+      />
+    </footer>
+  </body>
+</html>

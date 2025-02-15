@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chapter 1</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="../scripts/reload-client.js" type="module"></script>
+  </head>
+  <body>
+    <header
+      hx-get="/header"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-vals='{"title": "Chapter 1: Jumping In"}'
+    >
+      <span id="loading-header">Loading...</span>
+    </header>
+
+    <main>
+      <article class="card flex-column">
+        <div class="flex-column">
+          <h2>To Begin at the Beginning: <code>hx-get</code></h2>
+          <p>
+            This example demonstrates the core principle of htmx: the ability to
+            make requests from any element on the page. The button below has the
+            <code>hx-get</code> attribute set to <code>/version</code>. When
+            clicked, htmx will make a GET request to the server for the
+            <code>/version</code> resource and replace the content of the
+            <code>&lt;output&gt;</code> element with the response.
+          </p>
+          <button class="text" hx-get="/chapter-1/version" hx-target="#version">
+            Get Bun Version
+          </button>
+          <output id="version"></output>
+        </div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Create, Read, & Delete</h2>
+        <p>
+          This example demonstrates how to use htmx to create, read, and update
+          data on the server. The form below allows you to add a book to the
+          database. When you submit the form, htmx will make a POST request to
+          the server with the form data. The server will respond with the new
+          book's details, which htmx will insert into the table below.
+        </p>
+        <h3>Add a Book</h3>
+        <form
+          class="flex-column"
+          hx-post="/chapter-1/crd-book"
+          hx-disabled-elt="#add-button"
+          hx-target="table tbody"
+          hx-swap="afterbegin"
+          hx-on:htmx:after-request="this.reset()"
+        >
+          <div class="flex-row">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" required />
+          </div>
+          <div class="flex-row">
+            <label for="author">Author</label>
+            <input type="text" id="author" name="author" required />
+          </div>
+          <div class="flex-row">
+            <label for="year">Year</label>
+            <input type="number" name="year" id="year" required />
+          </div>
+          <button id="add-button" class="text">Add</button>
+        </form>
+
+        <h3>Favourtie Books</h3>
+
+        <table
+          hx-trigger="revealed"
+          hx-get="/chapter-1/crd-table-rows"
+          hx-target="tbody"
+        >
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Year</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </article>
+    </main>
+
+    <footer
+      hx-get="/footer"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-indicator="#loading-footer"
+    >
+      <span id="loading-footer">Loading...</span>
+    </footer>
+  </body>
+</html>

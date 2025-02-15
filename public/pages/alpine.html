@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>htmx Alpine.js</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+    <script src="../scripts/reload-client.js" type="module"></script>
+    <script src="../scripts/alpine-functions.js"></script>
+  </head>
+  <body>
+    <header
+      hx-get="/header"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-vals='{"title": "Chapter 5a: Alpine.js"}'
+    >
+      <span id="loading-header">Loading...</span>
+    </header>
+
+    <main>
+      <article class="card flex-column">
+        <h2>Conditional Visibility</h2>
+        <p>
+          In the below example, the "Hello, world!" message is only displayed
+          when the "Toggle" button is clicked. This is achieved by setting the
+          <code>x-show</code> directive to the value of the <code>open</code>, a
+          variable created on the parent <code>&lt;div&gt;</code> with the
+          <code>x-data</code> directive. The Button uses the
+          <code>x-on</code> directive (in this case, the shorthand '@') to
+          change the state of the <code>open</code> variable when clicked.
+        </p>
+        <div class="flex-column" x-data="{open: false}">
+          <button class="text" @click="open = !open">Toggle</button>
+          <div x-show="open">Hello, world!</div>
+        </div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Counter</h2>
+        <p>
+          This example demonstrates using the <code>x-bind</code> directive
+          (shorthand <code>:</code>) to set the <code>disabled</code> attribute
+          of the increment and decrement buttons based on the value of the
+          <code>count</code> property - minimum is 0 and maximum is 10.
+        </p>
+        <div class="flex-row centred" x-data="{count: 0}">
+          <button @click="count--" :disabled="count === 0">-</button>
+          <output x-text="count"></output>
+          <button @click="count++" :disabled="count === 10">+</button>
+        </div>
+      </article>
+
+      <article class="card flex-column">
+        <h2><code>x-for</code> and <code>x-if</code></h2>
+        <p>
+          This example demonstrates using the <code>x-for</code> directive to
+          loop through an array of items and the <code>x-if</code> directive to
+          conditionally display an item based on a condition. Note that these
+          directives can only be applied to <code>&lt;template&gt;</code> tags.
+          The <code>x-text</code> directive is used to set the text content of
+          the element.
+        </p>
+        <div x-data="colourData()" class="flex-column">
+          <template x-for="colour in colours">
+            <template x-if="colour.primary">
+              <div
+                :style="{color: colour.name, fontSize: '2rem'}"
+                x-text="colour.name"
+              ></div>
+            </template>
+          </template>
+        </div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Magic <code>$data</code></h2>
+        <p>
+          Alpine supports a group of 'magic' properties that begin with a '$'.
+          One of these is <code>$data</code>, which can be passed to a
+          javascript function and allows you to acces and
+          <code>x-data</code> properties. The example below uses nested
+          <code>x-data</code>
+          directives which will both be accessed by the
+          <code>incrementBoth</code> javascript function.
+        </p>
+        <div class="flex-column">
+          <div x-data="{outer: 1}">
+            <div>Outer: <span x-text="outer"></span></div>
+            <span x-data="{inner: 1}">
+              <div>Inner: <span x-text="inner"></span></div>
+              <button class="text" @click="incrementBoth($data)">
+                Increment Both
+              </button>
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Score Keeper</h2>
+        <p>
+          This example builds on the previous examples but ramps up the
+          complexity, allowing you to track the scores of two sportsball teams
+          playing some form of sportsball.
+        </p>
+        <article class="scores" x-data="getScores()">
+          <h3 id="report" x-text="report"></h3>
+          <div class="flex-row centred">
+            <div
+              class="column team"
+              :style="`border-color: ${colour(like)}`"
+              x-data="{like: false}"
+            >
+              <label>Team <input type="text" x-model="team1.name" /></label>
+              <label>Score <input type="number" x-model="team1.score" /></label>
+              <button @click="like = !like" x-text="heart(like)"></button>
+            </div>
+            <div
+              class="column team"
+              :style="`border-color: ${colour(like)}`"
+              x-data="{like: false}"
+            >
+              <label>Team <input type="text" x-model="team2.name" /></label>
+              <label>Score <input type="number" x-model="team2.score" /></label>
+              <button @click="like = !like" x-text="heart(like)"></button>
+            </div>
+          </div>
+        </article>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Todo</h2>
+        <p>
+          This example demonstrates a simple Todo application with only
+          alpine.js, albeit with the aid of the the official
+          <code>persist</code> plugin that allows data to be persisted to
+          <code>localStorage</code>.
+        </p>
+
+        <article
+          class="todo"
+          x-data="{
+            filter: 'all',
+            lastId: Alpine.$persist(0).as('lastId'),
+            status: '',
+            todos: Alpine.$persist([]).as('todos')
+          }"
+          x-effect="updateStatus($data)"
+          x-interpolate
+        >
+          <h2>To Do List</h2>
+          <div class="flex-row centred">
+            <span x-text="status"></span>
+            <button class="text destructive" @click="archiveCompleted($data)">
+              Archive Completed
+            </button>
+          </div>
+
+          <form
+            class="flex-row"
+            x-data="{text: ''}"
+            @submit.prevent="addTodo($data, text); text = ''"
+          >
+            <input autofocus type="text" x-model="text" />
+            <button class="text" :disabled="text.trim().length === 0">
+              Add
+            </button>
+          </form>
+
+          <div class="flex-row centred">
+            <label>
+              <input type="radio" name="filter" value="all" x-model="filter" />
+              All
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="filter"
+                value="completed"
+                x-model="filter"
+              />
+              Completed
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="filter"
+                value="uncompleted"
+                x-model="filter"
+              />
+              Uncompleted
+            </label>
+          </div>
+
+          <ul>
+            <template x-for="todo in filterTodos($data, filter)">
+              <li class="todo-item">
+                <input type="checkbox" x-model="todo.done" />
+                <span :class="{done: todo.done}" x-text="todo.text"></span>
+                <button class="destructive" @click="deleteTodo($data, todo.id)">
+                  &#128465;
+                </button>
+              </li>
+            </template>
+          </ul>
+        </article>
+      </article>
+    </main>
+
+    <footer
+      hx-get="/footer"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-indicator="#loading-footer"
+    >
+      <img
+        src="/assets/spinner.gif"
+        alt="loading"
+        id="loading-footer"
+        class="htmx-indicator centred"
+      />
+    </footer>
+  </body>
+</html>

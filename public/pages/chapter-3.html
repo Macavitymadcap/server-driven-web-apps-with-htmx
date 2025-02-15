@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chapter 3</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="../scripts/reload-client.js" type="module"></script>
+    <script>
+      const handleRoll = event => {
+        const { result } = event.detail;
+        console.log(event.detail);
+        alert('You rolled a ' + event.detail.value + '!');
+      };
+    </script>
+  </head>
+  <body hx-on:roll="handleRoll(event)">
+    <header
+      hx-get="/header"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-vals='{"title": "Chapter 3: Developing Endpoints"}'
+    >
+      <span id="loading-header">Loading...</span>
+    </header>
+    <main>
+      <article class="card flex-column">
+        <h2>Create, Read, Update & Delete</h2>
+        <p>
+          This example builds on the previous chapter by adding in the last CRUD
+          operation: update. The form below allows you to update a book in the
+          database. When you select a book from the table, htmx will make a GET
+          request to the server for the book's details. The server will respond
+          with the book's details, which htmx will insert into the form below.
+          When you submit the form, htmx will make a PUT request to the server
+          with the updated book details. The server will respond with the
+          updated book's details, which htmx will insert into the table below.
+        </p>
+        <div
+          hx-trigger="load"
+          hx-get="/chapter-3/crud-form"
+          hx-swap="outerHTML"
+        ></div>
+
+        <h3>Favourtie Books</h3>
+
+        <table
+          hx-trigger="revealed"
+          hx-get="/chapter-3/crud-table-rows"
+          hx-target="tbody"
+        >
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Year</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </article>
+
+      <article class="card flex-column">
+        <h2><code>hx-swap-oob</code>: Get Sonnet</h2>
+        <p>
+          This example demonstrates how to to swap elements out of bounds, i.e.,
+          swapping with an element outside of the one that triggered the swap.
+          The sonnet and its number are two separate elements rendered in a JSX
+          fragment. The title is the target of the button's request, but the
+          sonnet text is also swapped thanks to the
+          <code>hx-swap-oob</code> attribute.
+        </p>
+        <div class="flex-column">
+          <button class="text" hx-get="/chapter-3/sonnet" hx-target="#title">
+            New Sonnet
+          </button>
+          <h3 id="title">Sonnet Title</h3>
+          <pre id="sonnet" class="sonnet">
+Click the button to load a random sonnet.
+          </pre>
+        </div>
+      </article>
+
+      <article class="card flex-column">
+        <h2><code>hx-on</code>: roll</h2>
+        <p>
+          This example demonstrates how to use the <code>hx-on</code> attribute
+          to handle events that has been triggered by the server by sending the
+          <code>HX-Target</code> header in the response. When the button is
+          clicked, the server will respond with a die roll, and an alert will be
+          triggered with the result.
+        </p>
+        <button class="text" hx-get="/chapter-3/roll-die" hx-target="#content">
+          Roll d6
+        </button>
+        <output id="content"></output>
+      </article>
+    </main>
+
+    <footer
+      hx-get="/footer"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-indicator="#loading-footer"
+    >
+      <span id="loading-footer">Loading...</span>
+    </footer>
+  </body>
+</html>

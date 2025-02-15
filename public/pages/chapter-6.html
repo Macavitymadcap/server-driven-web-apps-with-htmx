@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>htmx Js API</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.13"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="../scripts/reload-client.js" type="module"></script>
+    <script src="../scripts/chapter-6.js"></script>
+  </head>
+
+  <body>
+    <header
+      hx-get="/header"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-vals='{"title": "Chapter 6: htmx Javascript API"}'
+    >
+      <span id="loading-header">Loading...</span>
+    </header>
+
+    <main>
+      <article class="card flex-column">
+        <h2><code>htmx.findAll()</code> - Colour Pickers</h2>
+        <p>
+          This example uses alpine to track the foreground an background colours
+          of the text blocks and then applies those colours using the
+          <code>htmx.findAll</code> method.
+        </p>
+
+        <section
+          class="flex-column"
+          x-data="{bgColour: '#ffffff', fgColour: '#000000'}"
+          x-init="updateStyles($data)"
+        >
+          <div class="flex-row">
+            <label for="foreground">
+              Foreground
+              <input
+                type="color"
+                id="foreground"
+                @input="updateStyles($data)"
+                x-model="fgColour"
+              />
+            </label>
+            <label for="background">
+              Background
+              <input
+                type="color"
+                id="background"
+                @input="updateStyles($data)"
+                x-model="bgColour"
+              />
+            </label>
+          </div>
+          <blockquote>
+            I don't know who you are. I don't know what you want. If you are
+            looking for ransom, I can tell you I don't have money. But what I do
+            have are a very particular set of skills; skills I have acquired
+            over a very long career. Skills that make me a nightmare for people
+            like you. If you let my daughter go now, that'll be the end of it. I
+            will not look for you, I will not pursue you. But if you don't, I
+            will look for you, I will find you, and I will kill you.
+          </blockquote>
+          <cite>Taken</cite>
+          <blockquote>
+            You don't understand. I coulda had class. I coulda been a contender.
+            I coulda been somebody, instead of a bum, which is what I am, let's
+            face it. It was you, Charley.
+          </blockquote>
+          <cite>On The Waterfront</cite>
+          <blockquote>
+            I'm The Dude, so that's what you call me. That or, uh, His Dudeness,
+            or uh, Duder, or El Duderino, if you're not into the whole brevity
+            thing.
+          </blockquote>
+          <cite>The Big Lebowski</cite>
+          <blockquote>
+            I've seen things you people wouldn't believe. Attack ships on fire
+            off the shoulder of Orion. I watched C-beams glitter in the dark
+            near the Tannhäuser Gate. All those moments will be lost in time,
+            like tears in rain.
+          </blockquote>
+          <cite>Bladerunner</cite>
+        </section>
+      </article>
+
+      <article class="card flex-column">
+        <h2><code>htmx.values()</code> Form Values</h2>
+        <p>
+          htmx provides an easy to gather form values with the
+          <code>.values</code> method. In the example below, the Debug button
+          makes use of the the <code>htmx.find()</code> method to locate the
+          form and the calls the <code>htmx.values()</code> method to get the a
+          JSON object of the form values and log it to the console ... in
+          theory. In practice, i have found that you need to use
+          <code>JSON.stringify()</code> to get the values in a readable format.
+        </p>
+        <form
+          id="register-form"
+          hx-post="chapter-6//register"
+          hx-target="#status"
+        >
+          <fieldset class="flex-column">
+            <legend>Register</legend>
+            <div class="flex-row">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" required />
+            </div>
+            <div class="flex-row">
+              <label for="age">Age</label>
+              <input type="number" name="age" id="age" required="required" />
+            </div>
+          </fieldset>
+          <div class="flex-row">
+            <button class="text primary">Submit</button>
+            <button class="text" type="button" hx-on:click="debugForm()">
+              Debug
+            </button>
+          </div>
+        </form>
+        <div id="status"></div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Stylings</h2>
+        <p>
+          htmx offers a number of methods to dynamically change CSS classes:
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>htmx.addClass()</code></td>
+              <td>Adds a class to the element</td>
+            </tr>
+            <tr>
+              <td><code>htmx.removeClass()</code></td>
+              <td>Removes a class from the element</td>
+            </tr>
+            <tr>
+              <td><code>htmx.takeClass()</code></td>
+              <td>
+                Modifies all sibling elements so onl;y one has a given CSS class
+              </td>
+            </tr>
+            <tr>
+              <td><code>htmx.toggleClass()</code></td>
+              <td>Toggles a class on the element</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          In the example below, a mixture of Alpine.js is and
+          <code>htmx.toggleClass()</code> is used to track the toppings a user
+          wans on their tasy pie.
+        </p>
+        <section x-data="">
+          <h3>Select Your Toppings</h3>
+          <div class="flex-row wrapped">
+            <template x-for="ingredient in ingredients">
+              <button
+                class="text ingredient"
+                @click="selectTopping"
+                x-text="ingredient"
+              ></button>
+            </template>
+          </div>
+          <div class="flex-column">
+            <button class="text primary" @click="orderPizza">Order</button>
+          </div>
+        </section>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Event Methods</h2>
+        <p>htmx provides three methods for dealing with event listeners:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr></tr>
+            <tr>
+              <td><code>htmx.off()</code></td>
+              <td>Removes an event listener from the element</td>
+            </tr>
+            <tr>
+              <td><code>htmx.on()</code></td>
+              <td>Attaches an event listener to the element</td>
+            </tr>
+            <tr>
+              <td><code>htmx.trigger()</code></td>
+              <td>Triggers an event on the element</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          In the following example, these methods and many others from the htmx
+          API are used in tandem with alpine to create a
+          <a href="/pages/balloon-game.html" target="_blank"
+            >balloon popping game</a
+          >
+          (opens in a new tab because fuck knows how to get it working
+          otherwise).
+        </p>
+      </article>
+
+      <article class="card flex-column">
+        <h2><code>htmx.ajax()</code> Heap Size</h2>
+        <p>
+          The core of htmx is allowing an element to make AJAX with attributes
+          (<code>hx-get</code>, <code>hx-post</code>, <code>hx-put</code>,
+          <code>hx-patch</code> and <code>hx-delete</code>), but these only work
+          when triggered on the element. The <code>htmx.ajax()</code>
+          method allows for a request to be sent only when called through
+          Javascript. In the example below, it is used to show how much heap
+          memory is being used by the server through polling.
+        </p>
+        <div>Heap size: <span id="heap-size"></span> MB</div>
+      </article>
+
+      <article class="card flex-column">
+        <h2><code>htmx.process()</code> Count At Time</h2>
+        <p>
+          IN the following example, some Alpine fuckery is combined with
+          <code>htmx.process()</code> to dynamically update the path requested
+          by the <code>hx-get</code> attribute.
+        </p>
+        <div x-data="{count: 0}" class="flex-column">
+          <div class="flex-row">
+            <button :disabled="count <= 0" @click="count--">-</button>
+            <span id="count" x-text="count"></span>
+            <button @click="count++">+</button>
+          </div>
+          <button
+            id="time-button"
+            class="text"
+            :hx-get="`/chapter-6/time/${count}`"
+            x-effect="count; htmx.process($el)"
+            hx-target="#time"
+          >
+            Get Time
+          </button>
+        </div>
+        <div id="time"></div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Happy or Sad</h2>
+        <p>
+          In this example, the <code>htmx.trigger()</code> method is used to
+          trigger a click event on the 😔 button if the user doesn't click the
+          decide their emotional state within 5 seconds.
+        </p>
+        <h3>How you doing boo?</h3>
+        <div
+          class="flex-row"
+          _="on intersection(intersecting) having threshold 1
+  set #emotional-state.innerHTML to ''
+  set $decided to false
+  if not $decided and intersecting
+  wait 5s then call htmx.trigger('#sad-button', 'click')
+  end
+  "
+        >
+          <button
+            class="primary"
+            _="on click
+  make <span.chip/> called happyChip
+  make a <span.label/> called happyLabel
+  set happyLabel.textContent to `You're doing great!`
+  put happyLabel at the start of happyChip
+  put happyChip at the start of #emotional-state
+  set $decided to true
+  "
+          >
+            😀
+          </button>
+          <button
+            id="sad-button"
+            _="on click
+make <span.chip/> called sadChip
+make a <span.label/> called sadLabel
+set sadLabel.textContent to `You're a sad panda!`
+put sadLabel at the start of sadChip
+put sadChip at the start of #emotional-state
+set $decided to true
+"
+          >
+            😔
+          </button>
+          <button
+            class="text destructive"
+            _="on click 
+remove <span.chip/> from #emotional-state 
+then set $decided to false 
+"
+          >
+            Reset
+          </button>
+        </div>
+        <div id="emotional-state"></div>
+      </article>
+
+      <article class="card flex-column">
+        <h2><code>htmx.ajax()</code> Quote</h2>
+        <p>
+          In this example, we use the <code>htmx.ajax()</code> method to get a a
+          ranodm quote from the
+          <a href="https://www.quoterism.com/developer" target="_blank"
+            >quoterism API</a
+          >
+          to render a random quote every ten seconds.
+        </p>
+        <div id="quote"></div>
+      </article>
+    </main>
+
+    <footer
+      hx-get="/footer"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-indicator="#loading-footer"
+    >
+      <span id="loading-footer">Loading...</span>
+    </footer>
+  </body>
+</html>

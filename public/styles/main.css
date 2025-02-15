@@ -1,0 +1,8 @@
+main {
+  width: 90%;
+  margin: 0 auto;
+  flex: 1;
+  margin-top: 7em;
+  margin-bottom: 5em;
+  overflow-y: auto;
+}

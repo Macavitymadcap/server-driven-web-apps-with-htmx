@@ -1,0 +1,28 @@
+{
+  "name": "server-driven-web-apps-with-htmx",
+  "scripts": {
+    "start": " concurrently \"bun run server\" \"bun run vanillaws\" \"bun run htmxws\"",
+    "server": "bun run src/server.ts",
+    "htmxws": "bun run src/sockets/htmx-websocket.tsx",
+    "vanillaws": "bun run src/sockets/vanilla-websocket.ts",
+    "dev": " concurrently \"bun run server:dev\" \"bun run vanillaws:dev\" \"bun run htmxws:dev\" \"bun run basketbal:ws\"",
+    "server:dev": "bun run --watch src/server.ts",
+    "vanillaws:dev": "bun run --watch src/sockets/vanilla-websocket.ts",
+    "htmxws:dev": "bun run --watch src/sockets/htmx-websocket.tsx",
+    "basketbal:ws": "bun run src/sockets/basketball-websocket.tsx",
+    "lint": "eslint '{src,public}/**/*.{css,html,js,ts,tsx}'",
+    "format": "prettier --write '{src,public}/**/*.{css,html,js,ts,tsx}'"
+  },
+  "dependencies": {
+    "concurrently": "^9.1.2",
+    "hono": "^4.6.18"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "@types/bun": "latest",
+    "eslint": "^9.18.0",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2",
+    "typescript-eslint": "^8.21.0"
+  }
+}

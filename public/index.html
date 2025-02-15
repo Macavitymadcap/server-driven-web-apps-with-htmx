@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Server Driven Web Apps With htmx</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.13"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="scripts/reload-client.js" type="module"></script>
+  </head>
+
+  <body>
+    <header
+      hx-get="/header"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-vals='{"title": "Server-Driven Web Apps with htmx"}'
+    >
+      <span id="loading-header">Loading...</span>
+    </header>
+
+    <main>
+      <article class="card flex-column">
+        <h2>Introduction</h2>
+        <p>
+          This website is my working out of the book "Server Driven Web Apps" by
+          R. Mark Volkmann. The book shows how to create dynamic web apps using
+          a stack of <a href="" target="_blank">Bun</a>,
+          <a href="https://hono.dev/" target="_blank">Hono</a>,
+          <a href="" target="_blank">htmx</a>, and
+          <a href="" target="_blank">JSX</a>.
+        </p>
+        <p>
+          The book is a great introduction to the concepts of server-driven web
+          apps, but the stylings are a bit dated. Rather than using the styles
+          verbatim, I decided to make this an extra learning oppurtunity and try
+          my hand developing my own design system for multi-page web apps. That
+          way, with this project completed I'll have a suite of CSS to use in
+          future projects.
+        </p>
+        <p>
+          Each page is roughly a chapter from the book, with my replication of
+          the examples and my attempts at the exercises as cards on the page.
+          You will notice that a chapter 2 is missing: this is by design as that
+          chapter deals with exploring alternate stacks for serving htmx apps.
+          While I do not find this stack to be perfect (bun doesn't always run
+          the code you write, and JSX still means having to use some React), it
+          works for a simple project like this.
+        </p>
+        <p>
+          Data storgage is ephemeral, so if you refresh the page, the data will
+          be lost. The book itslef mainly uses a JSON, but I decided to go a
+          step up and take advantage of bun's built in support for
+          <a href="https://bun.sh/docs/api/sqlite" target="_blank">SQLite</a>.
+          This allowed to work out how to write a simple data access layer,
+          although the concerns are smudged together more than they are
+          separated, as I have combined the roles of repository and service into
+          one class for the sake of simplicity.
+        </p>
+      </article>
+    </main>
+
+    <footer
+      hx-get="/footer"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-indicator="#loading-footer"
+    >
+      <span id="loading-footer">Loading...</span>
+    </footer>
+  </body>
+</html>

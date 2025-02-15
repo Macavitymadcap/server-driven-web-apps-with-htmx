@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>htmx Security</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.13"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="../scripts/reload-client.js" type="module"></script>
+  </head>
+
+  <body>
+    <header
+      hx-get="/header"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-vals='{"title": "Chapter 7: Adding Security"}'
+    >
+      <span id="loading-header">Loading...</span>
+    </header>
+
+    <main>
+      <article class="card flex-column">
+        <h2>Content Security Policy</h2>
+        <p>
+          A CSP for this site has been set up ased on the book's reeomendations:
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Policy</th>
+              <th>Values</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>report-uri</td>
+              <td>/csp-report</td>
+              <td>
+                Specifies the URI to which the browser will send reports about
+                policy violations.
+              </td>
+            </tr>
+            <tr>
+              <td>default-src</td>
+              <td>'self' 'unsafe-eval'</td>
+              <td>
+                Defines the default policy for fetching resources such as
+                JavaScript, images, CSS, fonts, AJAX requests, frames, HTML5
+                media.
+              </td>
+            </tr>
+            <tr>
+              <td>connect-src</td>
+              <td>'self' https://jsonplaceholder.typicode.com ws:</td>
+              <td>
+                Restricts the URLs which can be loaded using script interfaces.
+              </td>
+            </tr>
+            <tr>
+              <td>font-src</td>
+              <td>https://fonts.googleapis.com https://fonts.gstatic.com</td>
+              <td>
+                Specifies valid sources for fonts loaded using @font-face.
+              </td>
+            </tr>
+            <tr>
+              <td>img-src</td>
+              <td>
+                https://images.unsplash.com http://localhost:3000
+                https://raw.githubusercontent.com
+              </td>
+              <td>Specifies valid sources of images and favicons.</td>
+            </tr>
+            <tr>
+              <td>media-src</td>
+              <td>http://commondatastorage.googleapis.com</td>
+              <td>
+                Specifies valid sources for loading media using the
+                &lt;audio&gt; and &lt;video&gt; elements.
+              </td>
+            </tr>
+            <tr>
+              <td>script-src-elem</td>
+              <td>
+                'self' 'unsafe-inline' https://unpkg.com
+                https://cdn.jsdelivr.net
+              </td>
+              <td>
+                Specifies valid sources for JavaScript &lt;script&gt; elements.
+              </td>
+            </tr>
+            <tr>
+              <td>style-src-elem</td>
+              <td>'self' 'unsafe-inline' https://fonts.googleapis.com</td>
+              <td>Specifies valid sources for stylesheets.</td>
+            </tr>
+            <tr>
+              <td>style-src-attr</td>
+              <td>'self' 'unsafe-inline'</td>
+              <td>
+                Specifies valid sources for inline styles applied to individual
+                DOM elements.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          The presence of 'unsafe-inline' is problematic, but necessar to
+          allowed some of the functionality of alpine, htmx and hyperscript to
+          work.
+        </p>
+      </article>
+
+      <article class="card flex-column">
+        <h2>XSS</h2>
+        <p>
+          The button below will indeed return the current version of bun, but
+          instead of the accompanying logo as seen in Chapter 1, this button
+          tries to do an XSS attack. Fortunately, the CSP is set up to block
+          this attack, and the server escapes unsafe characters.
+        </p>
+        <button class="text" hx-get="/chapter-7/version" hx-target="#version">
+          Get Bun Version
+        </button>
+        <div id="version"></div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Allowed Media</h2>
+        <p>
+          The foloowing image and video have been allowed by the CSP because
+          they are from trusted sources (<a href="https://unsplash.com"
+            >Unsplash</a
+          >
+          and
+          <a href="https://commondatastorage.googleapis.com">Google Data</a>).
+          As well as images and video, all the fonts used on this site have been
+          allowed as they are sourced from
+          <a href="https://fonts.google.com">Google Fonts</a>.
+        </p>
+        <img
+          alt="Grand Prismatic Spring"
+          src="https://images.unsplash.com/photo-1629985692757-48648f4f1fc1"
+          width="300"
+        />
+        <video
+          src="http://commondatastorage.googleapis.com/
+gtv-videos-bucket/sample/BigBuckBunny.mp4"
+          controls
+          width="300"
+        ></video>
+      </article>
+    </main>
+
+    <footer
+      hx-get="/footer"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-indicator="#loading-footer"
+    >
+      <span id="loading-footer">Loading...</span>
+    </footer>
+  </body>
+</html>

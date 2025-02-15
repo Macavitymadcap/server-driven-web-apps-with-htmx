@@ -1,0 +1,187 @@
+.header {
+  background: var(--secondary-gradient);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: center;
+  flex: 1;
+}
+
+/* Hide checkboxes but keep them accessible for keyboard users */
+.nav-toggle,
+.submenu-toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Hamburger menu styles */
+.nav-toggle-label {
+  display: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.hamburger,
+.hamburger::before,
+.hamburger::after {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: currentColor;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+}
+
+.hamburger::before {
+  top: -6px;
+}
+
+.hamburger::after {
+  bottom: -6px;
+}
+
+/* Main navigation styles */
+.main-nav menu {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav li {
+  position: relative;
+}
+
+.main-nav a {
+  text-decoration: none;
+  display: block;
+  padding: 0.5rem;
+}
+
+.submenu-label {
+  font-size: unset;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+}
+
+.submenu-indicator {
+  font-size: 0.75em;
+  transition: transform 0.3s ease;
+}
+
+/* Submenu styles */
+.submenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--secondary-gradient);
+  min-width: 200px;
+  padding: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+/* Desktop submenu hover behavior */
+@media (min-width: 769px) {
+  .has-submenu:hover .submenu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .has-submenu:hover .submenu-indicator {
+    transform: rotate(180deg);
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 905px) {
+  .nav-toggle-label {
+    display: block;
+  }
+
+  .main-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--secondary-gradient);
+    padding: 1rem;
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .nav-toggle:checked ~ .main-nav {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .main-nav menu {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .submenu {
+    position: static;
+    box-shadow: none;
+    padding-left: 1rem;
+    transform: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .submenu-toggle:checked ~ .submenu {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .submenu-toggle:checked ~ .submenu-label .submenu-indicator {
+    transform: rotate(180deg);
+  }
+
+  /* Adjust submenu spacing */
+  .submenu menu {
+    margin-left: 1rem;
+  }
+}
+
+

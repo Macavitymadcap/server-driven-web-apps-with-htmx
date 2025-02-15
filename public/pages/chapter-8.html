@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>htmx Beyond Request/Response</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/htmx-ext-ws@2.0.0/ws.js"></script>
+    <script src="https://unpkg.com/htmx-ext-sse@2.0.0/sse.js"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="../scripts/reload-client.js" type="module"></script>
+    <script src="../scripts/chapter-8.js" defer></script>
+  </head>
+
+  <body>
+    <header
+      hx-get="/header"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-vals='{"title": "Chapter 5: Beyond Request/Response"}'
+    >
+      <span id="loading-header">Loading...</span>
+    </header>
+
+    <main>
+      <article class="card flex-column" x-data="{message: ''}">
+        <h2>Websocket: Vanilla</h2>
+        <p>
+          Websockets provide a full-duplex communication channel over a single
+          TCP connection. This allows for real-time communication between the
+          client and server. The server can push data to the client without the
+          client needing to request it.
+        </p>
+        <p>
+          The example below demonstrates how to use websockets Alpine and
+          JavaScript's <code>WebSocket</code> class, and retries to connect
+          every 2 seconds if connection is lost.
+        </p>
+        <form @submit.prevent="sendWebSocket(event, message)">
+          <div class="flex-row">
+            <label for="message">Message</label>
+            <input type="text" x-model="message" id="message" />
+          </div>
+          <div class="centred">
+            <button class="text">Send</button>
+          </div>
+        </form>
+        <div class="centered">
+          <button class="text destructive" @click="closeWebSocket()">
+            Close WebSocket Connection
+          </button>
+        </div>
+        <fieldset>
+          <legend>Last Message Received</legend>
+          <div id="received"></div>
+        </fieldset>
+      </article>
+
+      <article class="card flex-column">
+        <h2>webSocket: htmx</h2>
+        <p>
+          WebSockets can also be implemented using htmx, with the help of an
+          <a href="https://v1.htmx.org/extensions/web-sockets/">extension</a>.
+          This is enabled by loading the extension script and adding the
+          <code>hx-ext="ws"</code> attribute to the desired div. With that in
+          place you can use the <code>ws-connect</code> attribute to specify the
+          connection URL and add the <code>ws-send</code> attribute to the
+          element that will send messages.
+        </p>
+        <div
+          hx-ext="ws"
+          ws-connect="ws://localhost:3003"
+          hx-on::ws-after-send="htmx.find('#htmx-ws-countdown-form').reset()"
+        >
+          <form id="htmx-ws-countdown-form" ws-send>
+            <div class="flex-row">
+              <label for="htmx-ws-start">Start</label>
+              <input id="htmx-ws-start" type="number" name="start" />
+              <button class="text">Send</button>
+            </div>
+          </form>
+          <div class="flex-row centred">
+            <span>Countdown: </span>
+            <span id="htmx-ws-countdown"></span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Server-Sent Events: Vanilla</h2>
+        <p>
+          SSEs send data one way from the server to the client over a single
+          HTTP connection. The client listens for messages from the server and
+          can respond to them. The server can push data to the client without
+          the client needing to request it.
+        </p>
+        <p>
+          The reimplementation of the countdown timer blow uses the
+          <code>EventSource</code> JavaScript class to receive the countdown.
+        </p>
+        <form onsubmit="connectSSE(event)">
+          <div class="flex-row">
+            <label for="vanilla-sse-input">Start</label>
+            <input id="vanilla-sse-input" type="number" name="start" required />
+            <button class="text" type="submit">Send</button>
+          </div>
+        </form>
+        <div class="flex-column">
+          <span>Countdown: </span>
+          <span id="vanilla-sse-countdown"></span>
+        </div>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Server-Sent Events: htmx</h2>
+        <p>
+          The code required for vanilla SSE is terse, fortunately, htmx
+          provides an extension for working with them and, in theory, it should
+          simplify working with them. The example as written in the book,
+          however, is janky and leads to errors being thrown.
+        </p>
+        <form
+          hx-get="/chapter-8/start"
+          hx-on::before-request="reset(event)"
+          hx-swap="none"
+        >
+        <div class="flex-row">
+          <label for="htmx-sse-input">Start</label>
+          <input id="htmx-sse-input" type="number" name="start" required />
+          <button class="text" type="submit">Send</button>
+        </div>
+        <div
+        class="flex-column centred"
+          hx-ext="sse"
+          sse-connect="/chapter-8/htmx-countdown"
+          sse-swap="count"
+          hx-target="#htmx-sse-countdown"
+          hx-swap="beforeend"
+        >
+        <span>Countdown: </span>
+          <span id="htmx-sse-countdown"></span>
+        </div>
+        </form>
+      </article>
+
+      <article class="card flex-column">
+        <h2>Shooting Some B Ball: WebSocket</h2>
+        <p>
+          The scores are updated in real-time using websockets and htmx.
+        </p>
+        <div
+          hx-ext="ws"
+          ws-connect="ws://localhost:3004"
+          class="flex-row centred"
+          hx-trigger="load, every 5s"
+          ws-send
+        >
+        <span>Scores: </span>
+        <span  id="htmx-ws-basketball-scores"></span>
+      </div>
+      </article>
+    </main>
+
+    <footer
+      hx-get="/footer"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-indicator="#loading-footer"
+    >
+      <img
+        src="/assets/spinner.gif"
+        alt="loading"
+        id="loading-footer"
+        class="htmx-indicator centred"
+      />
+    </footer>
+  </body>
+</html>

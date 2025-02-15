@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/boosting.css" />
+    <script src="../scripts/boosting.js"></script>
+    <title>Boosting</title>
+  </head>
+  <body>
+    <header>
+      <h1>Boosting</h1>
+    </header>
+
+    <main>
+      <article class="card">
+        <h2>To Boost or not to Boost</h2>
+        <p>
+          If you opened this page with the boosted link, the styles should be
+          consistent with with the rest of the site, because the boosting means
+          that any stylesheets and scripts that are linked to the index page are
+          also linked to this page, and any that are loaded in the head of this
+          HTML are ignored.
+        </p>
+        <p>
+          If you opened this page with the un-boosted link, the styles and
+          scripts that are loaded in the head of this HTML are applied, which is
+          why you had to contend with that alert and why your eyes are bleeding
+          from the terrible styles.
+        </p>
+      </article>
+    </main>
+    <footer
+      hx-get="/footer"
+      hx-trigger="load"
+      hx-swap="outerHTML"
+      hx-indicator="#loading-footer"
+    >
+      <span id="loading-footer">Loading...</span>
+    </footer>
+  </body>
+</html>
