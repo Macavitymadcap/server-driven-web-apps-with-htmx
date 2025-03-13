@@ -1,9 +1,7 @@
 import { type Context, Hono, Next } from 'hono';
 import { serveStatic } from 'hono/bun';
-import './sockets/reload-server';
 import { Header, HeaderProps } from './components/Header';
 import { Footer } from './components/Footer';
-
 import { chapter1 } from './routes/chapter-1';
 import { chapter3 } from './routes/chapter-3';
 import { chapter4 } from './routes/chapter-4';

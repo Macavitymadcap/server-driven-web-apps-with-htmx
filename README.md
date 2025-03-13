@@ -16,21 +16,3 @@ bun install
 bun run start
 ```
 
-The Development server allows for reloading content without restarting the 
-server, but requires a bit more setup.
-
-1. Uncomment the following lin in the head of all html file:
-```html
-<script src="../scripts/reload-client.js" type="module"></script>
-```
-
-2. Uncomment line 3 of [server.ts](src/server.ts):
-```typescript
-import './sockets/reload-server';
-```
-
-3. Start the development server
-```bash
-bun run dev
-```
-
