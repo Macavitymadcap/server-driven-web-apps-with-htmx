@@ -16,6 +16,34 @@ primary_region = 'lhr'
   min_machines_running = 0
   processes = ['app']
 
+# WebSockets service configurations
+[[services]]
+  internal_port = 3002
+  protocol = "tcp"
+  
+  [[services.ports]]
+    port = 3002
+    handlers = ["http"]
+    force_https = true
+
+[[services]]
+  internal_port = 3003
+  protocol = "tcp"
+  
+  [[services.ports]]
+    port = 3003
+    handlers = ["http"]
+    force_https = true
+
+[[services]]
+  internal_port = 3004
+  protocol = "tcp"
+  
+  [[services.ports]]
+    port = 3004
+    handlers = ["http"]
+    force_https = true
+
 [[vm]]
   memory = '1gb'
   cpu_kind = 'shared'

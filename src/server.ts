@@ -13,7 +13,7 @@ import { booksDb, conditionsDb } from './database';
 const policies = [
   'report-uri /csp-report',
   "default-src 'self' 'unsafe-eval'",
-  "connect-src 'self' https://jsonplaceholder.typicode.com ws:",
+  "connect-src 'self' https://jsonplaceholder.typicode.com wss: ws:",
   'font-src https://fonts.googleapis.com https://fonts.gstatic.com',
   'img-src https://images.unsplash.com http://localhost:3000 https://raw.githubusercontent.com',
   'media-src http://commondatastorage.googleapis.com',

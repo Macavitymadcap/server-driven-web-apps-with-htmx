@@ -35,5 +35,5 @@ FROM base
 COPY --from=build /app /app
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 3000, 3002, 3003, 3004
+EXPOSE 3000 3002 3003 3004
 CMD [ "bun", "run", "start" ]
