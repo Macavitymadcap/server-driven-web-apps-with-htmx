@@ -126,7 +126,7 @@ chapter4.get('/paginated-poke-rows', async (context: Context) => {
 
 chapter4.get('/infinite-poke-rows', async (context: Context) => {
   const page = Number(context.req.query('page'));
-  if (!page) throw new Error('Page Qquery parameter is required');
+  if (!page) throw new Error('Page Query parameter is required');
   const rowsPerPage = 10;
   const pokemon = await pokemonService.fetch(page, rowsPerPage);
 

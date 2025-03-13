@@ -1,4 +1,3 @@
-// book-repository.test.ts
 import { expect, test, describe, beforeEach, afterEach } from 'bun:test';
 import { BookRepository } from './book-repository';
 
